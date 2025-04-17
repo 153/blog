@@ -31,6 +31,10 @@ article {
     padding: 1em;
 }
 
+article p a, article a {
+    color: blue;
+}
+
 footer {
     background-color: #ccc;
     text-align: right;
