@@ -71,7 +71,8 @@ for note in notes:
             tagdb[tag].append(dlist)
         else:
             tagdb[tag] = [dlist]
-                        
+
+# sort indices
 datedb.sort()
 for tag in tagdb:
     tagdb[tag].sort()
@@ -157,14 +158,14 @@ def make_index_tag(tag):
     if not os.path.isdir(f"{out_dir}tags/{tag}"):
         os.mkdir(f"{out_dir}tags/{tag}")
     make_index(f"tags/{tag}", tagdb[tag])
-    return True
 
 def make_archive():
     if not os.path.isdir(f"{out_dir}archive"):
         os.mkdir(f"{out_dir}archive")
     index = ["<article><ul>"]
     for year in sorted(yeardb):
-        index.append(f"<li><a href='/blog/{year}/'>{year}</a> - {len(yeardb[year])} articles")
+        index.append(f"<li><a href='/blog/{year}/'>{year}</a>"
+                     f" - {len(yeardb[year])} articles")
         index.append("<ul>")
         for month in sorted(monthdb[year]):
             index.append(f"<li><a href='/blog/{year}/{month}/'>{year}-{month}</a>"
@@ -180,14 +181,13 @@ def make_tags():
     tags = [[tag, len(tagdb[tag])] for tag in tagdb]
     tags.sort(key=lambda x: x[1], reverse=True)
     for tag in tags:
-        index.append(f"<li><a href='/blog/tags/{tag}/'>{tag[0]}</a> - {tag[1]} articles")
+        index.append(f"<li><a href='/blog/tags/{tag}/'>{tag[0]}</a>"
+                     f" - {tag[1]} articles")
     index.append("</ul>")
     index = "\n".join(index)
     with open(f"{out_dir}tags/index.html", "w") as tagpage:
         tagpage.write(templates["head"] + index + templates["foot"])
     print(tags)
-
-# make_article("hello")
 
 make_pages_all()
 make_index_all()
