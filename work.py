@@ -183,7 +183,7 @@ def make_tags():
     for tag in tags:
         index.append(f"<li><a href='/blog/tags/{tag[0]}/'>{tag[0]}</a>"
                      f" - {tag[1]} articles")
-    index.append("</ul>")
+    index.append("</ul></article>")
     index = "\n".join(index)
     with open(f"{out_dir}tags/index.html", "w") as tagpage:
         tagpage.write(templates["head"] + index + templates["foot"])
