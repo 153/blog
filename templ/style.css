@@ -1,0 +1,55 @@
+body {
+    max-width: 850px;
+    margin-left: 2em;
+    margin-top: 1em;
+    background-color: #444;
+}
+header {
+    background-color: #bbb;
+    padding: 1em;
+}
+
+nav {
+    background-color: #ccc;
+    text-align: right;
+}
+
+nav a {
+    color: crimson;
+}
+
+article {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    background-color: #ddd;
+    padding: 1em;
+}
+
+footer {
+    background-color: #ccc;
+    text-align: right;
+    padding: 1em
+}
+
+footer a {
+    color: crimson
+}
+
+.head {
+    background-color: #333;
+    color: #ccc;
+    text-align: right;
+    padding-bottom: 1em;
+    padding-right: 1em;
+    margin-bottom: 2em;
+}
+
+.head > h1 {
+    color: #eee;
+    padding-right: 1em;
+    margin-bottom: 0;
+}
+
+.head > a {
+    color: greenyellow;
+}
