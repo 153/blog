@@ -2,7 +2,7 @@
 import os
 import time
 import datetime
-import mistune
+from markdown_it import MarkdownIt
 
 # Configuration
 
@@ -12,9 +12,7 @@ templ_dir = "./templ/"
 tform = "%Y-%m-%d [%a] %H:%M UTC"
 root = "/blog/"
 
-markdown = mistune.create_markdown(
-    plugins=['strikethrough', 'footnotes', 'url',
-             'abbr', 'mark', 'spoiler'])
+markdown = MarkdownIt()
 
 notedb = {}
 tagdb = {}
@@ -98,9 +96,9 @@ def make_article(notefn):
         tags = [note["tags"]]
     tags = [f"<a href='{root}tags/{i}/'>#{i}</a>" for i in tags]
     tags = " ".join(tags)
-    post = markdown(note["post"])
+    post = markdown.render(note["post"])
 
-    title = f"<a href='{root}p/{notefn}.html'>{note['title']}</a>"
+    title = f"<a href='{root}{notefn}.html'>{note['title']}</a>"
         
     article = templates["article"]
     article = article.replace("$TITLE", title)\
@@ -112,7 +110,7 @@ def make_article(notefn):
 def write_article(notefn):
     article = make_article(notefn)
     article = "\n".join([templates["head"], article, templates["foot"]])
-    with open(f"{out_dir}/p/{notefn}.html", "w") as out:
+    with open(f"{out_dir}{notefn}.html", "w", encoding="utf-8") as out:
         out.write(article)
 
 def make_index(prefix, entries):
@@ -128,10 +126,10 @@ def make_index(prefix, entries):
     for p in pages:
         pages[p].reverse()
         output = "\n".join([templates["head"], *pages[p], templates["foot"]])
-        with open(f"{out_dir}{prefix}/{p}.html", "w") as out:
+        with open(f"{out_dir}{prefix}/{p}.html", "w", encoding="utf-8") as out:
             out.write(output)
         if p == "00":
-            with open(f"{out_dir}{prefix}/index.html", "w") as out:
+            with open(f"{out_dir}{prefix}/index.html", "w", encoding="utf-8") as out:
                 out.write(output)
 
 def make_pages_all():
@@ -174,7 +172,7 @@ def make_archive():
         index.append("</ul>")
     index.append("</ul></article>")
     index = "\n".join(index)
-    with open(f"{out_dir}archive/index.html", "w") as archive:
+    with open(f"{out_dir}archive/index.html", "w", encoding="utf-8") as archive:
         archive.write(templates["head"] + index + templates["foot"])
 
 def make_tags():
@@ -186,7 +184,7 @@ def make_tags():
                      f" - {tag[1]} articles")
     index.append("</ul></article>")
     index = "\n".join(index)
-    with open(f"{out_dir}tags/index.html", "w") as tagpage:
+    with open(f"{out_dir}tags/index.html", "w", encoding="utf-8") as tagpage:
         tagpage.write(templates["head"] + index + templates["foot"])
     print(tags)
 
