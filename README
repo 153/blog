@@ -1,0 +1,9 @@
+pip3 install -r requirements.txt
+
+Modify variables at top of work.py
+
+Modify style.css and template files in ./temp/
+
+Execute ./work.py to generate static site from input files
+
+Public domain / uncopyrighted
