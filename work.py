@@ -10,6 +10,7 @@ in_dir = "./pages/"
 out_dir = "./html/"
 templ_dir = "./templ/"
 tform = "%Y-%m-%d [%a] %H:%M UTC"
+root = "/blog/"
 
 markdown = mistune.create_markdown(
     plugins=['strikethrough', 'footnotes', 'url',
@@ -95,11 +96,11 @@ def make_article(notefn):
         tags = note["tags"].split(" ")
     else:
         tags = [note["tags"]]
-    tags = [f"<a href='/blog/tags/{i}/'>#{i}</a>" for i in tags]
+    tags = [f"<a href='{root}tags/{i}/'>#{i}</a>" for i in tags]
     tags = " ".join(tags)
     post = markdown(note["post"])
 
-    title = f"<a href='/blog/p/{notefn}.html'>{note['title']}</a>"
+    title = f"<a href='{root}p/{notefn}.html'>{note['title']}</a>"
         
     article = templates["article"]
     article = article.replace("$TITLE", title)\
@@ -164,11 +165,11 @@ def make_archive():
         os.mkdir(f"{out_dir}archive")
     index = ["<article><ul>"]
     for year in sorted(yeardb):
-        index.append(f"<li><a href='/blog/{year}/'>{year}</a>"
+        index.append(f"<li><a href='{root}{year}/'>{year}</a>"
                      f" - {len(yeardb[year])} articles")
         index.append("<ul>")
         for month in sorted(monthdb[year]):
-            index.append(f"<li><a href='/blog/{year}/{month}/'>{year}-{month}</a>"
+            index.append(f"<li><a href='{root}{year}/{month}/'>{year}-{month}</a>"
                          f" - {len(monthdb[year][month])} articles")
         index.append("</ul>")
     index.append("</ul></article>")
@@ -181,7 +182,7 @@ def make_tags():
     tags = [[tag, len(tagdb[tag])] for tag in tagdb]
     tags.sort(key=lambda x: x[1], reverse=True)
     for tag in tags:
-        index.append(f"<li><a href='/blog/tags/{tag[0]}/'>{tag[0]}</a>"
+        index.append(f"<li><a href='{root}tags/{tag[0]}/'>{tag[0]}</a>"
                      f" - {tag[1]} articles")
     index.append("</ul></article>")
     index = "\n".join(index)
