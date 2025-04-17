@@ -181,7 +181,7 @@ def make_tags():
     tags = [[tag, len(tagdb[tag])] for tag in tagdb]
     tags.sort(key=lambda x: x[1], reverse=True)
     for tag in tags:
-        index.append(f"<li><a href='/blog/tags/{tag}/'>{tag[0]}</a>"
+        index.append(f"<li><a href='/blog/tags/{tag[0]}/'>{tag[0]}</a>"
                      f" - {tag[1]} articles")
     index.append("</ul>")
     index = "\n".join(index)
