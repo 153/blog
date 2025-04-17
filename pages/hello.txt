@@ -1,0 +1,19 @@
+Hello World
+1744561200
+meta
+Hello world!
+
+I've decided to restart the 4x13.net blog after a break of approximately ten
+years, inspired largely by the blog of my friend [Akaines](//akai.gikopoi.com).
+
+A number of things I hope to write about:
+
+* music reviews, contemporary and vintage
+* various projects and hobbies that interest me
+* discussion about books
+* looks into Indonesian life as a migrant
+* reflections and accomplishments
+
+Hang tight until the blog is finished developing. Things will be a little bumpy.
+There will be an atom feed, so feel free to subscribe once it goes online.
+Source code and all content will be released into the public domain.
