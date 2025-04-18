@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+<title>4x13/notes for reading</title>
+<link href="URL" />
+<link rel="self" href="ATOMFILE" />
+<updated>UPDATED</updated>
+<author><name>4x13</name></author>
+<id>URL</id>
+

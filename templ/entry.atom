@@ -1,0 +1,9 @@
+<entry>
+<title>TITLE</title>
+<link rel="alternate" href="LINK" />
+<id>LINK</id>
+<updated>TIME</updated>
+<content type="html">
+CONTENT
+</content>
+</entry>

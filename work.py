@@ -10,7 +10,10 @@ in_dir = "./pages/"
 out_dir = "./html/"
 templ_dir = "./templ/"
 tform = "%Y-%m-%d [%a] %H:%M UTC"
+atomt = "%Y-%m-%dT%H:%M:%SZ"
 root = "/blog/"
+url = "https://4x13.net/blog/"
+atomfile = "index.atom"
 
 markdown = MarkdownIt()
 
@@ -24,9 +27,14 @@ monthdb = {}
 templates = {}
 
 for temp in ["article", "foot", "head"]:
-    with open(f"{templ_dir}/{temp}.html") as html:
+    with open(f"{templ_dir}{temp}.html") as html:
         html = html.read()
         templates[temp] = html
+
+for temp in ["feed", "entry"]:
+    with open(f"{templ_dir}{temp}.atom") as atom:
+        atom = atom.read()
+        templates[temp] = atom
 
 # Perform initial scraping
 
@@ -42,6 +50,7 @@ for note in notes:
 
     notedb[note] = {"title":data[0],
                     "date":data[1],
+                    "epoch":data[1],
                     "tags":data[2],
                     "post":"\n".join(data[3:])}
 
@@ -186,7 +195,36 @@ def make_tags():
     index = "\n".join(index)
     with open(f"{out_dir}tags/index.html", "w", encoding="utf-8") as tagpage:
         tagpage.write(templates["head"] + index + templates["foot"])
-    print(tags)
+
+def make_feed():
+    articles = datedb[::-1]
+    updated = notedb[articles[0][-1]]["epoch"]
+    updated = time.gmtime(int(updated))
+    updated = time.strftime(atomt, updated)
+                          
+    feed = templates["feed"].replace("UPDATED", updated)
+    feed = feed.replace("URL", url).replace("ATOMFILE", url+atomfile)
+    output = [feed]
+    for article in articles:
+        data = notedb[article[-1]]
+        title = data["title"]
+        link = url + article[-1] + ".html"
+        updated = data["epoch"]
+        updated = time.gmtime(int(updated))
+        updated = time.strftime(atomt, updated)
+        content = markdown.render(data["post"])
+        content = content.replace("&", "&amp;")\
+            .replace("<", "&lt;")\
+            .replace(">", "&gt;")
+        result = templates["entry"].replace("TITLE", title)\
+            .replace("LINK", link)\
+            .replace("TIME", updated)\
+            .replace("CONTENT", content)
+        output.append(result)
+    output.append("</feed>")
+    output = "\n".join(output)
+    with open(f"{out_dir}index.atom", "w", encoding="utf-8") as out:
+        out.write(output)
 
 make_pages_all()
 make_index_all()
@@ -196,7 +234,9 @@ for year in yeardb:
         make_index_month(year, month)
 
 make_archive()
+
 for tag in tagdb:
     make_index_tag(tag)
 make_tags()
 
+make_feed()
