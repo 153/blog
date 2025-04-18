@@ -97,14 +97,22 @@ for note in datedb:
     else:
         monthdb[note[0]] = {note[1]: [note]}
 
-def make_article(notefn):
-    note = notedb[notefn]
+def make_article(notefn, full=False):
+    note = notedb[notefn].copy()
     if " " in note["tags"]:
         tags = note["tags"].split(" ")
     else:
         tags = [note["tags"]]
     tags = [f"<a href='{root}tags/{i}/'>#{i}</a>" for i in tags]
     tags = " ".join(tags)
+
+    if "<SPLIT>" in note["post"]:
+        if full == False:
+            note["post"] = note["post"].split("<SPLIT>")[0]
+            note["post"] += f"\n\n [Continue reading...]({root}{notefn}.html)"
+        else:
+            note["post"] = note["post"].replace("<SPLIT>", "")
+            
     post = markdown.render(note["post"])
 
     title = f"<a href='{root}{notefn}.html'>{note['title']}</a>"
@@ -117,7 +125,7 @@ def make_article(notefn):
     return article
 
 def write_article(notefn):
-    article = make_article(notefn)
+    article = make_article(notefn, True)
     article = "\n".join([templates["head"], article, templates["foot"]])
     with open(f"{out_dir}{notefn}.html", "w", encoding="utf-8") as out:
         out.write(article)
@@ -212,6 +220,8 @@ def make_feed():
         updated = data["epoch"]
         updated = time.gmtime(int(updated))
         updated = time.strftime(atomt, updated)
+        if "<SPLIT>" in data["post"]:
+            data["post"] = data["post"].replace("<SPLIT>", "")
         content = markdown.render(data["post"])
         content = content.replace("&", "&amp;")\
             .replace("<", "&lt;")\
