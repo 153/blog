@@ -130,24 +130,61 @@ def write_article(notefn):
     with open(f"{out_dir}{notefn}.html", "w", encoding="utf-8") as out:
         out.write(article)
 
+def pg_nav(prefix, p, pcnt):
+    data = ["<article>"]
+    pre = False
+    nex = False
+
+    if int(p) != pcnt:
+        pre = str(int(p) + 1).zfill(2)
+    if int(p) != 0:
+        nex = str(int(p) - 1).zfill(2)
+
+    if len(prefix) > 1:
+        prefix += "/"
+    if nex is not False:
+        data.append(f"<a href='{root}{prefix}{nex}.html'>Newer &larr;</a>")
+        
+    data.append(" ".join(["Page", str(int(p)), "of", str(pcnt)]))
+    
+    if pre is not False:
+        data.append(f"<a href='{root}{prefix}{pre}.html'>&rarr; Older</a>")
+    data.append("</article>")
+    data = "\n".join(data)
+    return data
+    
+        
 def make_index(prefix, entries):
     counter = 0
     pcnt = 0
     pages = {}
+
+    # sort from new to old
+    entries = entries[::-1]
+    
     for article in entries:
         counter += 1
+
+        # increase page count
+        if counter > 10:
+            counter = 1
+            pcnt += 1
         p = str(pcnt).zfill(2)
         if p not in pages:
             pages[p] = []
         pages[p].append(make_article(article[-1]))
     for p in pages:
-        pages[p].reverse()
-        output = "\n".join([templates["head"], *pages[p], templates["foot"]])
+        tail = ""
+        if pcnt > 0:
+            tail = pg_nav(prefix, p, pcnt)
+            
+        output = "\n".join([templates["head"], *pages[p], tail, templates["foot"]])
         with open(f"{out_dir}{prefix}/{p}.html", "w", encoding="utf-8") as out:
             out.write(output)
         if p == "00":
             with open(f"{out_dir}{prefix}/index.html", "w", encoding="utf-8") as out:
                 out.write(output)
+    
 
 def make_pages_all():
     for page in datedb:
@@ -179,11 +216,11 @@ def make_archive():
     if not os.path.isdir(f"{out_dir}archive"):
         os.mkdir(f"{out_dir}archive")
     index = ["<article><ul>"]
-    for year in sorted(yeardb):
+    for year in sorted(yeardb)[::-1]:
         index.append(f"<li><a href='{root}{year}/'>{year}</a>"
                      f" - {len(yeardb[year])} articles")
         index.append("<ul>")
-        for month in sorted(monthdb[year]):
+        for month in sorted(monthdb[year])[::-1]:
             index.append(f"<li><a href='{root}{year}/{month}/'>{year}-{month}</a>"
                          f" - {len(monthdb[year][month])} articles")
         index.append("</ul>")
@@ -194,7 +231,7 @@ def make_archive():
 
 def make_tags():
     index = ["<article><ul>"]
-    tags = [[tag, len(tagdb[tag])] for tag in tagdb]
+    tags = [[tag, len(tagdb[tag])] for tag in tagdb][::-1]
     tags.sort(key=lambda x: x[1], reverse=True)
     for tag in tags:
         index.append(f"<li><a href='{root}tags/{tag[0]}/'>{tag[0]}</a>"
@@ -236,6 +273,13 @@ def make_feed():
     with open(f"{out_dir}index.atom", "w", encoding="utf-8") as out:
         out.write(output)
 
+def mk_pages(prefix, entries, page):
+    pages = len(entries-1)//10
+    out = [f"<a href='{root}/{prefix}/00.html'>[0]</a>",
+           f"<a href='{root}/{prefix}/{page}.html'>[{page}]</a>",
+           f"<a href='{root}/{prefix}/{pages}.html'>[{pages}]</a>"]
+    
+        
 make_pages_all()
 make_index_all()
 for year in yeardb:
