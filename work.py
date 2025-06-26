@@ -9,8 +9,10 @@ from markdown_it import MarkdownIt
 in_dir = "./pages/"
 out_dir = "./html/"
 templ_dir = "./templ/"
+
 tform = "%Y-%m-%d [%a] %H:%M UTC"
 atomt = "%Y-%m-%dT%H:%M:%SZ"
+
 root = "/blog/"
 url = "https://4x13.net/blog/"
 atomfile = "index.atom"
@@ -28,13 +30,11 @@ templates = {}
 
 for temp in ["article", "foot", "head"]:
     with open(f"{templ_dir}{temp}.html") as html:
-        html = html.read()
-        templates[temp] = html
+        templates[temp] = html.read()
 
 for temp in ["feed", "entry"]:
     with open(f"{templ_dir}{temp}.atom") as atom:
-        atom = atom.read()
-        templates[temp] = atom
+        templates[temp] = atom.read()
 
 # Perform initial scraping
 
@@ -137,7 +137,7 @@ def pg_nav(prefix, p, pcnt):
 
     if int(p) != pcnt:
         pre = str(int(p) + 1).zfill(2)
-    if int(p) != 0:
+    if int(p) != 1:
         nex = str(int(p) - 1).zfill(2)
 
     if len(prefix) > 1:
@@ -156,7 +156,7 @@ def pg_nav(prefix, p, pcnt):
         
 def make_index(prefix, entries):
     counter = 0
-    pcnt = 0
+    pcnt = 1
     pages = {}
 
     # sort from new to old
@@ -175,17 +175,16 @@ def make_index(prefix, entries):
         pages[p].append(make_article(article[-1]))
     for p in pages:
         tail = ""
-        if pcnt > 0:
+        if pcnt > 1:
             tail = pg_nav(prefix, p, pcnt)
             
         output = "\n".join([templates["head"], *pages[p], tail, templates["foot"]])
         with open(f"{out_dir}{prefix}/{p}.html", "w", encoding="utf-8") as out:
             out.write(output)
-        if p == "00":
+        if p == "01":
             with open(f"{out_dir}{prefix}/index.html", "w", encoding="utf-8") as out:
                 out.write(output)
     
-
 def make_pages_all():
     for page in datedb:
         write_article(page[-1])
@@ -253,6 +252,7 @@ def make_feed():
     for article in articles:
         data = notedb[article[-1]]
         title = data["title"]
+        title = title.replace("&", "&amp;")
         link = url + article[-1] + ".html"
         updated = data["epoch"]
         updated = time.gmtime(int(updated))
@@ -273,13 +273,7 @@ def make_feed():
     with open(f"{out_dir}index.atom", "w", encoding="utf-8") as out:
         out.write(output)
 
-def mk_pages(prefix, entries, page):
-    pages = len(entries-1)//10
-    out = [f"<a href='{root}/{prefix}/00.html'>[0]</a>",
-           f"<a href='{root}/{prefix}/{page}.html'>[{page}]</a>",
-           f"<a href='{root}/{prefix}/{pages}.html'>[{pages}]</a>"]
-    
-        
+# Generate site
 make_pages_all()
 make_index_all()
 for year in yeardb:
